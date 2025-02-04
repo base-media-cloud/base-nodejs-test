@@ -8,6 +8,7 @@ export const {
   ICONIK_APP_ID,
   ICONIK_AUTH_TOKEN,
   ICONIK_CUSTOM_ACTION_ID,
+  FRAME_IO_WEBHOOK_SECRET,
   FRAME_IO_ACCESS_TOKEN,
   FRAME_IO_ROOT_ASSET_ID,
 } = object({
@@ -19,4 +20,5 @@ export const {
   ICONIK_CUSTOM_ACTION_ID: string().uuid(),
   FRAME_IO_ACCESS_TOKEN: string().required(),
   FRAME_IO_ROOT_ASSET_ID: string().uuid().required(),
+  FRAME_IO_WEBHOOK_SECRET: string().required(),
 }).validateSync(process.env)
