@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios'
 import { frameIoClient } from 'src/utils/frame-io-client.js'
-import { deleteCommentInIconik } from './deleteCommentInIconik.js'
-import { upsertCommentInIconik } from './upsertCommentInIconik.js'
+import { deleteCommentInIconik } from './delete-comment-in-iconik.js'
+import { upsertCommentInIconik } from './upsert-comment-in-iconik.js'
 
 import type { FrameioWebhookBody } from 'src/utils/frameio-webhook-schema.js'
 
@@ -24,12 +24,24 @@ async function fetchCommentData(commentId: string) {
 
 export async function frameioMessageSyncUseCase(payload: FrameioWebhookBody) {
   const commentData = await fetchCommentData(payload.resource.id)
+  const parentCommentData = commentData?.parent_id ? await fetchCommentData(commentData.parent_id) : null
 
-  if (commentData) {
-    await upsertCommentInIconik(commentData.id, commentData.asset_id, commentData.text)
-  } else {
+  if (!commentData) {
     await deleteCommentInIconik(payload.resource.id)
+    return;
   }
 
-
+  if (parentCommentData) {
+    await upsertCommentInIconik({
+      frameIoCommentId: parentCommentData.id,
+      frameIoAssetId: parentCommentData.asset_id,
+      commentText: parentCommentData.text,
+    });
+  }
+  await upsertCommentInIconik({
+    frameIoCommentId: commentData.id,
+    frameIoAssetId: commentData.asset_id,
+    commentText: commentData.text,
+    frameIoParentCommentId: parentCommentData?.id,
+  });
 }
