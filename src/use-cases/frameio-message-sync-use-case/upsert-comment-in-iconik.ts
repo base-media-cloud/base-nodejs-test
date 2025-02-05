@@ -24,13 +24,13 @@ export async function upsertCommentInIconik({
   const foundComment = asset.comments?.find(comment => comment.frameIoCommentId === frameIoCommentId)
   const foundParentComment = frameIoParentCommentId
     ? asset.comments?.find(comment => comment.frameIoCommentId === frameIoParentCommentId)
-    : null;
+    : null
 
   const iconicComment = {
     segment_type: 'COMMENT',
     segment_text: commentText,
     ...(foundParentComment?.iconikMessageId ? { parent_id: foundParentComment?.iconikMessageId } : {}),
-  };
+  }
 
   if (foundComment) {
     return await iconikClient.put(
