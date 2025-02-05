@@ -1,5 +1,5 @@
 import express from 'express'
-import { ICONIK_CUSTOM_ACTION_URL_PATH } from 'src/config/iconik-custom-action.js'
+import { ICONIK_CUSTOM_ACTION_URL_PATH, ICONIK_CUSTOM_ACTION_TOKEN } from 'src/config/iconik-custom-action.js'
 import {
   amqpChannel,
   FRAMEIO_WEBHOOK_MESSAGE_TYPE,
@@ -12,12 +12,16 @@ import { FRAMEIO_WEBHOOK_URL_PATH, FRAME_IO_WEBHOOK_SECRET } from 'src/config/fr
 import { frameioHeadersSchema, frameioWebhookBodySchema } from 'src/utils/frameio-webhook-schema.js'
 import { frameIoSignatureMiddleware } from 'src/utils/frame-io-signature-middleware.js'
 import { body, headers } from 'src/utils/validator-middleware.js'
+import {
+  iconikCustomActionTokenValidationMiddleware
+} from '../utils/iconik-custom-action-token-validation-middleware.js'
 
 export const apiRouter = express.Router()
 
 apiRouter.post(
   ICONIK_CUSTOM_ACTION_URL_PATH,
   body(iconikCustomActionPayloadSchema),
+  iconikCustomActionTokenValidationMiddleware(ICONIK_CUSTOM_ACTION_TOKEN),
   async (req, res) => {
     amqpChannel.publish(ICONIK_CUSTOM_ACTION_TOPIC_NAME, ICONIK_CUSTOM_ACTION_MESSAGE_TYPE, Buffer.from(JSON.stringify(req.body)))
 
