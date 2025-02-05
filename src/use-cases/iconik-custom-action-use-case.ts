@@ -22,12 +22,13 @@ export async function iconikCustomActionUseCase(payload: IconikCustomActionPaylo
       filesize: proxy.size ?? undefined,
       source: {
         url: proxy.url
-      }
+      },
     }
   )
 
   await assetCollection.insertOne({
     iconikAssetId: iconikAsset.id,
     frameIoAssetId: frameIoAsset.id,
+    comments: [],
   })
 }
