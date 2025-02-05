@@ -25,6 +25,6 @@ export const frameioWebhookBodySchema = object({
 export type FrameioWebhookBody = InferType<typeof frameioWebhookBodySchema>
 
 export const frameioHeadersSchema = object({
-  'X-Frameio-Signature': string().required(),
-  'X-Frameio-Request-Timestamp': number().required(),
+  'x-frameio-signature': string().required(),
+  'x-frameio-request-timestamp': number().required(),
 })
