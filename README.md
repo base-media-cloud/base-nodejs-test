@@ -78,3 +78,22 @@ Example additional topics to consider:
 - Rate limits (Frame.io and Iconik)
 - Preventing race conditions
 - Tests
+
+## Work done:
+
+### One-way comments synchronization from Frame.io to Iconik
+- Comments, including replies, are synchronised after receiving an event via webhook
+- Comment sync queue consumer is idempotent: events can arrive in wrong order or duplicated and the latest state from Frame.io is correctly sent to Iconik
+- There is no "setup" script to configure webhook in Frame.io - frame.io webhook must be configured manually
+
+### Exponential backoff strategy
+- Exponential backoff without rate limiting is the most appropriate strategy for leaking bucket rate limits used by both Frame.io and Iconik
+- Backoff is implemented in consumer, without rescheduling: it is the easiest way and also the one that preserves the order of events (even though in this particular case, it is not strictly necessary, as mentioned above)
+
+### Error handling
+- Express error handler is added to make error handling consistent across the app
+- Added validation middlewares to separate validation logic
+
+### Security
+- Frame.io request signature is validated
+- Iconik endpoint requires a token to be sent in the `Authorization` header - solution obviously not secure, but it's better than nothing
